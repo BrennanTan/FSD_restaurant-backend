@@ -1,104 +1,69 @@
 const express = require('express');
 const router = express.Router();
-const Orders = require('../models/orders'); // Adjust the path as needed
+const Orders = require('../models/orders');
 
-// Create Order
+const allowedStatuses = ['Preparing', 'Rejected', 'Waiting Delivery', 'Delivering', 'Successfully Delivered'];
+
+// Find active Order for a user (Restrict users to 1 active order)
+router.get('/getActiveOrder/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const activeOrder = await Orders.findOne({
+      userId,
+      status: { $nin: ['Rejected', 'Successfully Delivered'] }
+    });
+
+    if (activeOrder) {
+      return res.json(activeOrder);
+    } else {
+      return res.json({ message: 'No active order found' });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Error retrieving active orders', error });
+  }
+});
+
+// Create new Order
 router.post('/newOrder', async (req, res) => {
-    try{
-      const { items, userId } = req.body;
-      const order = new Orders({ items, userId });
-      
-      await order.save();
-      res.json({ message: 'Order placed successfully!', order });
-    }catch(error){
-      res.status(500).json({ message: 'Error creating order', error });
-    }
-  
-  });
-  
-// Accept Order
-router.post('/acceptOrder', async (req, res) => {
-  try{
-    const { orderId } = req.body;
-    const acceptOrder = await Orders.findByIdAndUpdate(orderId, {status: 'Preparing'})
+  try {
+    const { items, userId } = req.body;
 
-    if (!acceptOrder) {
-      return res.status(404).json({ message: 'Order not found!' });
+    if (!items || items.length === 0) {
+      return res.status(400).json({ message: 'Items cannot be empty' });
     }
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const order = new Orders({ items, userId });
     
-    res.json({ message: 'Order accepted successfully!'});
-  }catch(error){
-    res.status(500).json({ message: 'Error accepting order', error });
+    await order.save();
+    return res.status(201).json({ message: 'Order placed successfully!', order });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error creating order', error });
   }
-
 });
 
-// Reject Order
-router.post('/rejectOrder', async (req, res) => {
-  try{
-    const { orderId } = req.body;
-    const rejectOrder = await Orders.findByIdAndUpdate(orderId, {status: 'Rejected'})
+// Update Order Status
+router.put('/updateOrderStatus', async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
 
-    if (!rejectOrder) {
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid order status' });
+    }
+
+    const updatedOrder = await Orders.findByIdAndUpdate(orderId, { status }, { new: true });
+
+    if (!updatedOrder) {
       return res.status(404).json({ message: 'Order not found!' });
     }
-    
-    res.json({ message: 'Order rejected successfully!'});
-  }catch(error){
-    res.status(500).json({ message: 'Error rejecting order', error });
+
+    return res.json({ message: `Order status updated to ${status} successfully!`, updatedOrder });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error updating order status', error });
   }
-
-});
-
-// Order waiting delivery
-router.post('/waitDeliveryOrder', async (req, res) => {
-  try{
-    const { orderId } = req.body;
-    const waitDeliveryOrder = await Orders.findByIdAndUpdate(orderId, {status: 'Waiting Delivery'})
-
-    if (!waitDeliveryOrder) {
-      return res.status(404).json({ message: 'Order not found!' });
-    }
-    
-    res.json({ message: 'Order status updated to waiting delivery successfully!'});
-  }catch(error){
-    res.status(500).json({ message: 'Error updating order to waiting delivery', error });
-  }
-
-});
-
-// Order out for delivery
-router.post('/deliveringOrder', async (req, res) => {
-  try{
-    const { orderId } = req.body;
-    const deliveringOrder = await Orders.findByIdAndUpdate(orderId, {status: 'Delivering'})
-
-    if (!deliveringOrder) {
-      return res.status(404).json({ message: 'Order not found!' });
-    }
-    
-    res.json({ message: 'Order status updated to delivering successfully!'});
-  }catch(error){
-    res.status(500).json({ message: 'Error updating order to delivering', error });
-  }
-
-});
-
-// Order Successfully Delivered
-router.post('/deliveredOrder', async (req, res) => {
-  try{
-    const { orderId } = req.body;
-    const deliveredOrder = await Orders.findByIdAndUpdate(orderId, {status: 'Successfully Delivered'})
-
-    if (!deliveredOrder) {
-      return res.status(404).json({ message: 'Order not found!' });
-    }
-    
-    res.json({ message: 'Order status updated to successfully delivered successfully!'});
-  }catch(error){
-    res.status(500).json({ message: 'Error updating order to successfully delivered', error });
-  }
-
 });
 
 module.exports = router;
