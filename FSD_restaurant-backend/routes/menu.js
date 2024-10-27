@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const MenuItems = require('../models/menuItems');
 
+module.exports = (wsServer) => {
 // Get Menu
 router.get('/getMenu', async (req, res) => {
   try {
@@ -20,13 +21,13 @@ router.get('/getMenu', async (req, res) => {
 // Add New Menu Item
 router.post('/newMenuItem', async (req, res) => {
   try {
-    const { name, category, description, price, quantity, image } = req.body;
+    const { name, category, description, price, image } = req.body;
 
-    if (!name || !category || !description || !price || !quantity || !image) {
+    if (!name || !category || !description || !price || !image) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const newMenuItem = new MenuItems({ name, category, description, price, quantity, image });
+    const newMenuItem = new MenuItems({ name, category, description, price, image });
 
     await newMenuItem.save();
     res.status(201).json({ message: 'Menu item added successfully!', newMenuItem });
@@ -38,20 +39,29 @@ router.post('/newMenuItem', async (req, res) => {
 // Update Menu Item
 router.put('/updateMenuItem', async (req, res) => {
   try {
-    const { itemId, name, category, description, price, quantity, image } = req.body;
+    const { itemId, name, category, description, price, available, image } = req.body;
 
     if (!itemId) {
       return res.status(400).json({ message: 'Missing item ID' });
     }
 
+    const checkItem = await MenuItems.findById(itemId);
+    if (!checkItem) {
+      return res.status(404).json({ message: 'Menu item not found!' });
+    }
+
     const updatedMenuItem = await MenuItems.findByIdAndUpdate(
       itemId,
-      { name, category, description, price, quantity, image },
+      { name, category, description, price, available, image },
       { new: true }
     );
 
-    if (!updatedMenuItem) {
-      return res.status(404).json({ message: 'Menu item not found!' });
+    // If item updated to unavailable, send ws notif
+    if (updatedMenuItem.available === false) {
+      wsServer.notifyRoles('USER', 'Item unavailable', {
+        itemId: updatedMenuItem._id,
+        status: 'Item unavailable'
+      });
     }
 
     res.status(200).json({ message: 'Menu item updated successfully!', updatedMenuItem });
@@ -81,4 +91,5 @@ router.delete('/deleteMenuItem', async (req, res) => {
   }
 });
 
-module.exports = router;
+return router;
+};

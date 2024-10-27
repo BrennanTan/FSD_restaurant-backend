@@ -4,6 +4,26 @@ const Orders = require('../models/orders');
 
 const allowedStatuses = ['Preparing', 'Rejected', 'Waiting Delivery', 'Delivering', 'Successfully Delivered'];
 
+module.exports = (wsServer) => {
+
+// Get all active orders 
+router.get('/getAllOrders', async (req, res) => {
+  try {
+    const allOrder = await Orders.find({
+      status: { $nin: ['Rejected', 'Successfully Delivered'] }
+    }).lean();
+
+    if (allOrder.length > 0) {
+      return res.status(200).json(allOrder);
+    } else {
+      return res.status(404).json({ message: 'No orders found' });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Error retrieving active orders', error });
+  }
+});
+
 // Find active Order for a user (Restrict users to 1 active order)
 router.get('/getActiveOrder/:userId', async (req, res) => {
   try {
@@ -14,9 +34,9 @@ router.get('/getActiveOrder/:userId', async (req, res) => {
     });
 
     if (activeOrder) {
-      return res.json(activeOrder);
+      return res.status(200).json(activeOrder);
     } else {
-      return res.json({ message: 'No active order found' });
+      return res.status(404).json({ message: 'No active order found' });
     }
 
   } catch (error) {
@@ -37,8 +57,15 @@ router.post('/newOrder', async (req, res) => {
     }
 
     const order = new Orders({ items, userId });
-    
     await order.save();
+
+    wsServer.notifyRoles('ADMIN', 'New Order Created', {
+      orderId: order._id,
+      userId: userId,
+      items: items,
+      status: 'New Order Received'
+    });
+
     return res.status(201).json({ message: 'Order placed successfully!', order });
   } catch (error) {
     return res.status(500).json({ message: 'Error creating order', error });
@@ -60,10 +87,18 @@ router.put('/updateOrderStatus', async (req, res) => {
       return res.status(404).json({ message: 'Order not found!' });
     }
 
+    // Notify about status update
+    wsServer.notifyUsers(updatedOrder.userId, 'Order Status Updated', {
+      orderId: orderId,
+      status: status,
+      message: `Your order status has been updated to ${status}`
+    });
+
     return res.json({ message: `Order status updated to ${status} successfully!`, updatedOrder });
   } catch (error) {
     return res.status(500).json({ message: 'Error updating order status', error });
   }
 });
 
-module.exports = router;
+return router;
+};

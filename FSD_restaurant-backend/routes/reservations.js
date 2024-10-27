@@ -2,6 +2,40 @@ const express = require('express');
 const router = express.Router();
 const Reservations = require('../models/reservations');
 
+module.exports = (wsServer) => {
+// Get user's reservation
+router.get('/getUserReservations/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const userReservations = await Reservations.find({ userId }).lean();
+
+    if (userReservations.length > 0) {
+      return res.status(200).json(userReservations);
+    } else {
+      return res.status(404).json({ message: 'No reservations found for this user' });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Error retrieving user reservations', error });
+  }
+});
+
+// Get pending reservations
+router.get('/getPendingReservations', async (req, res) => {
+  try {
+    const reservations = await Reservations.find({ status: 'Pending' });
+
+    if (reservations.length === 0) {
+      return res.status(404).json({ message: 'No pending reservations found!' });
+    }
+
+    return res.status(200).json(reservations);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error retrieving reservations', error });
+  }
+});
+
+
 // Get all reservations
 router.get('/getReservations', async (req, res) => {
   try {
@@ -17,7 +51,7 @@ router.get('/getReservations', async (req, res) => {
   }
 });
 
-// Create a new reservation
+// Create a new reservation, ws to staff
 router.post('/newReservations', async (req, res) => {
   try {
     const { date, time, size, userId } = req.body;
@@ -35,7 +69,7 @@ router.post('/newReservations', async (req, res) => {
   }
 });
 
-// Update reservation status
+// Update reservation status, ws to user or staff if cancelled
 router.put('/updateReservationStatus', async (req, res) => {
   try {
     const { reservationId, status } = req.body;
@@ -57,7 +91,7 @@ router.put('/updateReservationStatus', async (req, res) => {
   }
 });
 
-// Update reservation details
+// Update reservation details, ws to user
 router.put('/updateReservation', async (req, res) => {
   try {
     const { reservationId, date, time, size, status } = req.body;
@@ -82,4 +116,5 @@ router.put('/updateReservation', async (req, res) => {
   }
 });
 
-module.exports = router;
+return router;
+}

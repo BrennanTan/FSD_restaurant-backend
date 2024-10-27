@@ -5,8 +5,8 @@ const menuItemSchema = new mongoose.Schema({
   category: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
-  quantity: { type:Number, required: true},
-  image: {type:String, required: true}
+  available: { type: Boolean, required: true, default: true},
+  image: {type: String, required: true}
 });
 
 module.exports = mongoose.model('menuItems', menuItemSchema);

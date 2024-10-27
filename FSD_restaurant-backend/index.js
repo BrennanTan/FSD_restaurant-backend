@@ -1,40 +1,31 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const cors = require('cors');
+const http = require('http');
+const setupWebSocket = require('./websocket');
 
 const connectDB = require('./db');
-
 const usersRouter = require('./routes/users');
-const adminsRouter = require('./routes/admins');
 const menuRouter = require('./routes/menu');
 const ordersRouter = require('./routes/orders');
 const reservationsRouter = require('./routes/reservations');
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 connectDB();
+
+// Create HTTP server and WebSocket server
+const server = http.createServer(app);
+const wsServer = setupWebSocket(server);
 
 // Routers
 app.use('/users', usersRouter);
-app.use('/admins', adminsRouter);
-app.use('/menu', menuRouter);
-app.use('/orders', ordersRouter);
-app.use('/reservations', reservationsRouter);
-
-// Track Order
-app.get('/orders/:id', async (req, res) => {
-  const orderId = req.params.id;
-  const order = await Orders.findById(orderId);
-  
-  if (order) {
-    res.json(order);
-  } else {
-    res.status(404).json({ message: 'Order not found' });
-  }
-});
+app.use('/menu', menuRouter(wsServer)); 
+app.use('/orders', ordersRouter(wsServer));
+app.use('/reservations', reservationsRouter(wsServer));
   
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

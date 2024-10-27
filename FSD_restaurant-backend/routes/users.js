@@ -6,9 +6,9 @@ const Users = require('../models/users');
 // User Registration
 router.post('/register', async (req, res) => {
   try {
-    const { username, password, phone } = req.body;
+    const { username, password } = req.body;
 
-    if (!username || !password || !phone) {
+    if (!username || !password ) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    const user = new Users({ username, password: hashedPassword, phone });
+    const user = new Users({ username, password: hashedPassword });
     
     await user.save();
     res.status(201).json({ message: 'User registered successfully!' });
@@ -37,13 +37,39 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const user = await Users.findOne({ username });
+    const user = await Users.findOne({ username, role: 'USER' });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found!' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    res.json({ message: 'Login successful!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error during login', error });
+  }
+});
+
+// Admin Login
+router.post('/admin-login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const admin = await Users.findOne({ username, role: 'ADMIN' });
+
+    if (!admin) {
+      return res.status(404).json({ message: 'User not found!' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, admin.password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
