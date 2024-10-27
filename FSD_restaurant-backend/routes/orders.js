@@ -61,9 +61,7 @@ router.post('/newOrder', async (req, res) => {
 
     wsServer.notifyRoles('ADMIN', 'New Order Created', {
       orderId: order._id,
-      userId: userId,
-      items: items,
-      status: 'New Order Received'
+      message: 'New Order Received'
     });
 
     return res.status(201).json({ message: 'Order placed successfully!', order });
