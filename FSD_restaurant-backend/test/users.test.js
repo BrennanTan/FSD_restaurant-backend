@@ -1,9 +1,11 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const sinon = require('sinon');
-const bcrypt = require('bcrypt');
-const { expect } = chai;
-const Users = require('../models/users');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import sinon from 'sinon';
+import bcrypt from 'bcrypt';
+import { expect } from 'chai';
+import express from 'express';
+import usersRouter from '../routes/users';    
+import Users from '../models/users';
 
 chai.use(chaiHttp);
 
@@ -24,11 +26,9 @@ describe('User Routes', () => {
 
   beforeEach(() => {
     // Reset the express app
-    const express = require('express');
     app = express();
     app.use(express.json());
-    const usersRouter = require('../routes/users');
-    app.use('/api/users', usersRouter);
+    app.use(usersRouter);
   });
 
   afterEach(() => {

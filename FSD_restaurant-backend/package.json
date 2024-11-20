@@ -1,19 +1,24 @@
 {
   "name": "restaurant-app",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
-          },
+  },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "chai": "^5.1.2",
+    "chai-http": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "mocha": "^10.8.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.7.2",
+    "sinon": "^19.0.2",
     "ws": "^8.18.0"
   }
 }
