@@ -1,11 +1,11 @@
-import express from 'express';
+const express = require('express');
 const router = express.Router();
-import Orders from '../models/orders.js';
-
+const Orders = require('../models/orders');
 
 const allowedStatuses = ['Preparing', 'Rejected', 'Waiting Delivery', 'Delivering', 'Successfully Delivered'];
 
-export default (wsServer) => {
+module.exports = (wsServer) => {
+
 // Get all active orders 
 router.get('/getAllOrders', async (req, res) => {
   try {

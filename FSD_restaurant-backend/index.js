@@ -1,12 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import http from 'http';
-import setupWebSocket from './websocket.js';
-import connectDB from './db.js';
-import usersRouter from './routes/users.js';
-import menuRouter from './routes/menu.js';
-import ordersRouter from './routes/orders.js';
-import reservationsRouter from './routes/reservations.js';
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const setupWebSocket = require('./websocket');
+
+const connectDB = require('./db');
+const usersRouter = require('./routes/users');
+const menuRouter = require('./routes/menu');
+const ordersRouter = require('./routes/orders');
+const reservationsRouter = require('./routes/reservations');
 
 const app = express();
 app.use(cors());
@@ -22,7 +23,7 @@ app.use('/users', usersRouter);
 app.use('/menu', menuRouter(wsServer)); 
 app.use('/orders', ordersRouter(wsServer));
 app.use('/reservations', reservationsRouter(wsServer));
-
+  
 // Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

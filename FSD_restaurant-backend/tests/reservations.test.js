@@ -1,11 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import { expect } from 'chai';
-import sinon from 'sinon';
-import mongoose from 'mongoose';
-import Reservations from '../models/reservations.js';
-import reservationsRouter from '../routes/reservations.js';
-import express from 'express';
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const sinon = require('sinon');
+const { expect } = chai;
+const mongoose = require('mongoose');
+const Reservations = require('../models/reservations');
 
 chai.use(chaiHttp);
 
@@ -30,9 +28,11 @@ describe('Reservation Routes', () => {
     };
 
     // Reset the express app with the stubbed WebSocket server
+    const express = require('express');
     app = express();
     app.use(express.json());
-    app.use(reservationsRouter(mockWsServer));
+    const reservationsRouter = require('../routes/reservations')(wsServerStub);
+    app.use('/api/reservations', reservationsRouter);
   });
 
   afterEach(() => {

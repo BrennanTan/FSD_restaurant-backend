@@ -1,8 +1,8 @@
-import express from 'express';
+const express = require('express');
 const router = express.Router();
-import MenuItems from '../models/menuItems.js';
+const MenuItems = require('../models/menuItems');
 
-export default (wsServer) => {
+module.exports = (wsServer) => {
 // Get Menu
 router.get('/getMenu', async (req, res) => {
   try {

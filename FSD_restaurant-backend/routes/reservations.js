@@ -1,8 +1,8 @@
-import express from 'express';
+const express = require('express');
 const router = express.Router();
-import Reservations from '../models/reservations.js';
+const Reservations = require('../models/reservations');
 
-export default (wsServer) => {
+module.exports = (wsServer) => {
 // Get user's reservation
 router.get('/getUserReservations/:userId', async (req, res) => {
   try {

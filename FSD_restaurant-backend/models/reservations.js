@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const reservationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
@@ -8,4 +8,4 @@ const reservationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
 });
 
-export default mongoose.model('reservations', reservationSchema);
+module.exports = mongoose.model('reservations', reservationSchema);

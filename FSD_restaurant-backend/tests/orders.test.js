@@ -1,11 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import { expect } from 'chai';
-import sinon from 'sinon';
-import mongoose from 'mongoose';
-import Orders from '../models/orders.js';
-import express from 'express';
-import orderRoutes from '../routes/orders.js';
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const { expect } = chai;
+const sinon = require('sinon');
+const mongoose = require('mongoose');
+const Orders = require('../models/orders');
 
 chai.use(chaiHttp);
 
@@ -16,9 +14,11 @@ const mockWsServer = {
 };
 
 // Create Express app for testing
+const express = require('express');
 const app = express();
 app.use(express.json());
-app.use(orderRoutes(mockWsServer));
+const orderRoutes = require('../routes/orders')(mockWsServer);
+app.use(orderRoutes);
 
 // Sample test data
 const sampleOrder = {

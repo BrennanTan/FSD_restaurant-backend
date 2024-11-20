@@ -1,11 +1,10 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import express from 'express';
-import { expect } from 'chai';
-import sinon from 'sinon';
-import mongoose from 'mongoose';
-import MenuItems from '../models/menuItems.js';
-import menuRoutes from '../routes/menu.js';
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const express = require('express');
+const { expect } = chai;
+const sinon = require('sinon');
+const mongoose = require('mongoose');
+const MenuItems = require('../models/menuItems');
 
 chai.use(chaiHttp);
 
@@ -17,7 +16,8 @@ const mockWsServer = {
 // Create Express app for testing
 const app = express();
 app.use(express.json());
-app.use(menuRoutes(mockWsServer));
+const menuRoutes = require('../routes/menu')(mockWsServer);
+app.use(menuRoutes);
 
 // Mock data
 const sampleMenuItem = {
