@@ -7,7 +7,7 @@ module.exports = (wsServer) => {
 router.get('/getUserReservations/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
-    const userReservations = await Reservations.find({ userId }).lean();
+    const userReservations = await Reservations.find({ userId });
 
     if (userReservations.length > 0) {
       return res.status(200).json(userReservations);
@@ -16,7 +16,10 @@ router.get('/getUserReservations/:userId', async (req, res) => {
     }
 
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving user reservations', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving user reservations',
+      error: error.message 
+    });
   }
 });
 
@@ -31,7 +34,10 @@ router.get('/getPendingReservations', async (req, res) => {
 
     return res.status(200).json(reservations);
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving reservations', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving reservations',
+      error: error.message 
+    });
   }
 });
 
@@ -47,7 +53,10 @@ router.get('/getReservations', async (req, res) => {
 
     return res.json(reservations);
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving reservations', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving reservations',
+      error: error.message 
+     });
   }
 });
 
@@ -70,7 +79,10 @@ router.post('/newReservations', async (req, res) => {
 
     return res.status(201).json({ message: 'Reservation created successfully!', reservation });
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating reservation', error });
+    return res.status(500).json({ 
+      message: 'Error creating reservation',
+      error: error.message 
+     });
   }
 });
 
@@ -120,7 +132,10 @@ router.put('/updateReservationStatus', async (req, res) => {
 
     return res.json({ message: `Reservation status updated to ${status} successfully!`, updatedReservation });
   } catch (error) {
-    return res.status(500).json({ message: 'Error updating reservation status', error });
+    return res.status(500).json({ 
+      message: 'Error updating reservation status', 
+      error: error.message
+     });
   }
 });
 
@@ -155,7 +170,10 @@ router.put('/updateReservation', async (req, res) => {
 
     return res.json({ message: 'Reservation updated successfully!', updatedReservation });
   } catch (error) {
-    return res.status(500).json({ message: 'Error updating reservation', error });
+    return res.status(500).json({ 
+      message: 'Error updating reservation', 
+      error: error.message
+     });
   }
 });
 

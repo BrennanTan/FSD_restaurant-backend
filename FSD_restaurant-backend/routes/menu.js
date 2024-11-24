@@ -6,7 +6,7 @@ module.exports = (wsServer) => {
 // Get Menu
 router.get('/getMenu', async (req, res) => {
   try {
-    const menuItems = await MenuItems.find().lean();
+    const menuItems = await MenuItems.find();
 
     if (!menuItems || menuItems.length === 0) {
       return res.status(404).json({ message: 'No menu items found!' });
@@ -14,25 +14,34 @@ router.get('/getMenu', async (req, res) => {
 
     res.status(200).json(menuItems);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving menu items', error });
+    res.status(500).json({ 
+      message: 'Error retrieving menu items', 
+      error: error.message 
+    });
   }
 });
 
 // Add New Menu Item
 router.post('/newMenuItem', async (req, res) => {
   try {
+    // Validate required fields
     const { name, category, description, price, image } = req.body;
-
     if (!name || !category || !description || !price || !image) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const newMenuItem = new MenuItems({ name, category, description, price, image });
-
-    await newMenuItem.save();
-    res.status(201).json({ message: 'Menu item added successfully!', newMenuItem });
+    // Create new menu item
+    const newMenuItem = await MenuItems.create(req.body);
+    
+    res.status(201).json({
+      message: 'Menu item added successfully!',
+      newMenuItem
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error adding menu item', error });
+    res.status(500).json({ 
+      message: 'Error adding menu item',
+      error: error.message 
+    });
   }
 });
 
@@ -66,7 +75,10 @@ router.put('/updateMenuItem', async (req, res) => {
 
     res.status(200).json({ message: 'Menu item updated successfully!', updatedMenuItem });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating menu item', error });
+    res.status(500).json({ 
+      message: 'Error updating menu item',
+      error: error.message
+    });
   }
 });
 
@@ -87,7 +99,10 @@ router.delete('/deleteMenuItem', async (req, res) => {
 
     res.status(200).json({ message: 'Menu item deleted successfully!' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting menu item', error });
+    res.status(500).json({ 
+      message: 'Error deleting menu item',
+      error: error.message  
+    });
   }
 });
 
