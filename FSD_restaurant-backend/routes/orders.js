@@ -11,7 +11,7 @@ router.get('/getAllOrders', async (req, res) => {
   try {
     const allOrder = await Orders.find({
       status: { $nin: ['Rejected', 'Successfully Delivered'] }
-    }).lean();
+    });
 
     if (allOrder.length > 0) {
       return res.status(200).json(allOrder);
@@ -20,7 +20,10 @@ router.get('/getAllOrders', async (req, res) => {
     }
 
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving active orders', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving active orders',
+      error: error.message  
+    });
   }
 });
 
@@ -40,7 +43,10 @@ router.get('/getActiveOrder/:userId', async (req, res) => {
     }
 
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving active orders', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving active orders', 
+      error: error.message 
+    });
   }
 });
 
@@ -66,7 +72,10 @@ router.post('/newOrder', async (req, res) => {
 
     return res.status(201).json({ message: 'Order placed successfully!', order });
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating order', error });
+    return res.status(500).json({ 
+      message: 'Error creating order',
+      error: error.message  
+    });
   }
 });
 
@@ -94,7 +103,10 @@ router.put('/updateOrderStatus', async (req, res) => {
 
     return res.json({ message: `Order status updated to ${status} successfully!`, updatedOrder });
   } catch (error) {
-    return res.status(500).json({ message: 'Error updating order status', error });
+    return res.status(500).json({ 
+      message: 'Error updating order status',  
+      error: error.message 
+    });
   }
 });
 
