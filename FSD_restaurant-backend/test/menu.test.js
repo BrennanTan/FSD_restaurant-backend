@@ -77,10 +77,7 @@ describe('Menu Routes', () => {
           price: 12.99,
           image: 'new.jpg'
         };
-      
-        const mockCreatedItem = { ...menuData, _id: 'mock-id-123' };
-        MenuItems.create.mockResolvedValue(mockCreatedItem);
-      
+
         const response = await request(app)
           .post('/menu/newMenuItem')
           .send(menuData)
@@ -91,7 +88,6 @@ describe('Menu Routes', () => {
         
         expect(response.status).toBe(201);
         expect(response.body.message).toBe('Menu item added successfully!');
-        expect(response.body.newMenuItem).toEqual(mockCreatedItem);
         expect(MenuItems.create).toHaveBeenCalledWith(expect.objectContaining(menuData));
       });
 
@@ -159,7 +155,6 @@ describe('Menu Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Menu item updated successfully!');
-      expect(response.body.updatedMenuItem).toEqual(expect.objectContaining(updateData));
       expect(mockWsServer.notifyRoles).toHaveBeenCalledWith(
         'USER',
         'Item unavailable',

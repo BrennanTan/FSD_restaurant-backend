@@ -69,8 +69,7 @@ router.post('/newReservations', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const reservation = new Reservations({ date, time, size, userId });
-    await reservation.save();
+    const reservation = await Reservations.create(req.body);
 
     wsServer.notifyRoles('ADMIN', 'New Reservation Created', {
       reservationId: reservation._id,

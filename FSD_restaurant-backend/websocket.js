@@ -33,7 +33,6 @@ function setupWebSocket(server) {
     });
   });
 
-  // Utility functions to send notifications
 return {
   // Send to specific user(s)
   notifyUsers: (userIds, type, data) => {
@@ -70,7 +69,6 @@ return {
   // Broadcast to all connected clients
   broadcast: (type, data) => {
     for (const [client] of clients.entries()) {
-      // Apply optional filter function
         client.send(JSON.stringify({
           type,
           ...data

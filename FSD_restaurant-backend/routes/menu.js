@@ -30,12 +30,10 @@ router.post('/newMenuItem', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Create new menu item
-    const newMenuItem = await MenuItems.create(req.body);
+    await MenuItems.create(req.body);
     
     res.status(201).json({
-      message: 'Menu item added successfully!',
-      newMenuItem
+      message: 'Menu item added successfully!'
     });
   } catch (error) {
     res.status(500).json({ 
@@ -73,7 +71,7 @@ router.put('/updateMenuItem', async (req, res) => {
       });
     }
 
-    res.status(200).json({ message: 'Menu item updated successfully!', updatedMenuItem });
+    res.status(200).json({ message: 'Menu item updated successfully!'});
   } catch (error) {
     res.status(500).json({ 
       message: 'Error updating menu item',
@@ -101,7 +99,7 @@ router.delete('/deleteMenuItem', async (req, res) => {
   } catch (error) {
     res.status(500).json({ 
       message: 'Error deleting menu item',
-      error: error.message  
+      error: error.message 
     });
   }
 });
