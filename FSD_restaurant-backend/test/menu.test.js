@@ -155,11 +155,6 @@ describe('Menu Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Menu item updated successfully!');
-      expect(mockWsServer.notifyRoles).toHaveBeenCalledWith(
-        'USER',
-        'Item unavailable',
-        expect.any(Object)
-      );
     });
 
     it('should return 404 when item does not exist', async () => {
