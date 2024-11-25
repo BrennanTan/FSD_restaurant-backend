@@ -9,7 +9,7 @@ router.get('/getUserReservations/:userId', async (req, res) => {
     const userId = req.params.userId;
     const userReservations = await Reservations.find({ userId });
 
-    if (userReservations.length > 0) {
+    if (Array.isArray(userReservations) && userReservations.length > 0) {
       return res.status(200).json(userReservations);
     } else {
       return res.status(404).json({ message: 'No reservations found for this user' });
@@ -51,7 +51,7 @@ router.get('/getReservations', async (req, res) => {
       return res.status(404).json({ message: 'No reservations found!' });
     }
 
-    return res.json(reservations);
+    return res.status(200).json(reservations);
   } catch (error) {
     return res.status(500).json({ 
       message: 'Error retrieving reservations',
@@ -76,7 +76,7 @@ router.post('/newReservations', async (req, res) => {
       message: 'New Reservation Received'
     });
 
-    return res.status(201).json({ message: 'Reservation created successfully!', reservation });
+    return res.status(201).json({ message: 'Reservation created successfully!'});
   } catch (error) {
     return res.status(500).json({ 
       message: 'Error creating reservation',
@@ -90,10 +90,6 @@ router.put('/updateReservationStatus', async (req, res) => {
   try {
     const { reservationId, status } = req.body;
     const allowedStatuses = ['Accepted', 'Declined', 'Cancelled'];
-
-    if (!reservationId) {
-      return res.status(400).json({ message: 'Missing reservation ID' });
-    }    
 
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid reservation status' });
@@ -129,7 +125,7 @@ router.put('/updateReservationStatus', async (req, res) => {
         break;  
     }
 
-    return res.json({ message: `Reservation status updated to ${status} successfully!`, updatedReservation });
+    return res.status(200).json({ message: `Reservation status updated to ${status} successfully!`});
   } catch (error) {
     return res.status(500).json({ 
       message: 'Error updating reservation status', 
@@ -167,7 +163,7 @@ router.put('/updateReservation', async (req, res) => {
       message: 'Reservations Details Updated by Staff'
     });
 
-    return res.json({ message: 'Reservation updated successfully!', updatedReservation });
+    return res.status(200).json({ message: 'Reservation updated successfully!'});
   } catch (error) {
     return res.status(500).json({ 
       message: 'Error updating reservation', 

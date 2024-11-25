@@ -7,13 +7,10 @@ jest.mock('../models/orders', () => ({
   findOne: jest.fn(),
   findById: jest.fn(),
   findByIdAndUpdate: jest.fn(),
-  findByIdAndDelete: jest.fn(),
-  deleteMany: jest.fn()
 }));
 
 const Orders = require('../models/orders');
 const createRouter = require('../routes/orders');
-const { findOne } = require('../models/menuItems');
 
 describe('Order Routes', () => {
     let app;
@@ -265,7 +262,7 @@ describe('Order Routes', () => {
             const invalidStatus = {
                 orderId: 'mock_123', 
                 status: 'INVALID!!!'
-              };
+            };
     
           const response = await request(app)
             .put('/orders/updateOrderStatus')
@@ -273,7 +270,7 @@ describe('Order Routes', () => {
             .catch(error => {
                 console.error('Request error:', error);
                 throw error;
-              });
+            });
     
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('Invalid order status');
