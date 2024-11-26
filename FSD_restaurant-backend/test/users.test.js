@@ -91,7 +91,6 @@ describe('User Routes', () => {
         role: 'USER'
       };
 
-      console.log(mockUser);
       Users.findOne.mockResolvedValue(mockUser);
 
       const response = await request(app)
