@@ -7,20 +7,23 @@ const allowedStatuses = ['Preparing', 'Rejected', 'Waiting Delivery', 'Deliverin
 module.exports = (wsServer) => {
 
 // Get all active orders 
-router.get('/getAllOrders', async (req, res) => {
+router.get('/getAllActiveOrders', async (req, res) => {
   try {
     const allOrder = await Orders.find({
       status: { $nin: ['Rejected', 'Successfully Delivered'] }
-    }).lean();
+    });
 
     if (allOrder.length > 0) {
       return res.status(200).json(allOrder);
     } else {
-      return res.status(404).json({ message: 'No orders found' });
+      return res.status(404).json({ message: 'No active orders found' });
     }
 
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving active orders', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving active orders',
+      error: error.message  
+    });
   }
 });
 
@@ -36,11 +39,14 @@ router.get('/getActiveOrder/:userId', async (req, res) => {
     if (activeOrder) {
       return res.status(200).json(activeOrder);
     } else {
-      return res.status(404).json({ message: 'No active order found' });
+      return res.status(404).json({ message: 'No active orders for this user found' });
     }
 
   } catch (error) {
-    return res.status(500).json({ message: 'Error retrieving active orders', error });
+    return res.status(500).json({ 
+      message: 'Error retrieving active orders for this user', 
+      error: error.message 
+    });
   }
 });
 
@@ -56,17 +62,19 @@ router.post('/newOrder', async (req, res) => {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
-    const order = new Orders({ items, userId });
-    await order.save();
+    const order = await Orders.create(req.body);
 
     wsServer.notifyRoles('ADMIN', 'New Order Created', {
       orderId: order._id,
       message: 'New Order Received'
     });
 
-    return res.status(201).json({ message: 'Order placed successfully!', order });
+    return res.status(201).json({ message: 'Order placed successfully!'});
   } catch (error) {
-    return res.status(500).json({ message: 'Error creating order', error });
+    return res.status(500).json({ 
+      message: 'Error creating order',
+      error: error.message  
+    });
   }
 });
 
@@ -92,9 +100,12 @@ router.put('/updateOrderStatus', async (req, res) => {
       message: `Your order status has been updated to ${status}`
     });
 
-    return res.json({ message: `Order status updated to ${status} successfully!`, updatedOrder });
+    return res.status(200).json({ message: `Order status updated to ${status} successfully!`});
   } catch (error) {
-    return res.status(500).json({ message: 'Error updating order status', error });
+    return res.status(500).json({ 
+      message: 'Error updating order status',  
+      error: error.message 
+    });
   }
 });
 

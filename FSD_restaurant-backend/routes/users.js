@@ -20,11 +20,14 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const user = new Users({ username, password: hashedPassword });
-    
     await user.save();
+    
     res.status(201).json({ message: 'User registered successfully!' });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering user', error });
+    res.status(500).json({ 
+      message: 'Error registering user',
+      error: error.message 
+     });
   }
 });
 
@@ -50,7 +53,10 @@ router.post('/login', async (req, res) => {
 
     res.json({ message: 'Login successful!' });
   } catch (error) {
-    res.status(500).json({ message: 'Error during login', error });
+    res.status(500).json({ 
+      message: 'Error during login',
+      error: error.message 
+    });
   }
 });
 
@@ -76,7 +82,10 @@ router.post('/admin-login', async (req, res) => {
 
     res.json({ message: 'Login successful!' });
   } catch (error) {
-    res.status(500).json({ message: 'Error during login', error });
+    res.status(500).json({ 
+      message: 'Error during login', 
+      error: error.message  
+    });
   }
 });
 
