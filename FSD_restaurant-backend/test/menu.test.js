@@ -1,17 +1,9 @@
 const request = require('supertest');
 const express = require('express');
-
-jest.mock('../models/menuItems', () => ({
-  find: jest.fn(),
-  create: jest.fn(),
-  findById: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-  findByIdAndDelete: jest.fn(),
-  deleteMany: jest.fn()
-}));
-
 const MenuItems = require('../models/menuItems');
 const createRouter = require('../routes/menu');
+
+jest.mock('../models/menuItems');
 
 describe('Menu Routes', () => {
   let app;

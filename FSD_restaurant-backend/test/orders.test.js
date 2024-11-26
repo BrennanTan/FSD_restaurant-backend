@@ -1,16 +1,9 @@
 const request = require('supertest');
 const express = require('express');
-
-jest.mock('../models/orders', () => ({
-  find: jest.fn(),
-  create: jest.fn(),
-  findOne: jest.fn(),
-  findById: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-}));
-
 const Orders = require('../models/orders');
 const createRouter = require('../routes/orders');
+
+jest.mock('../models/orders');
 
 describe('Order Routes', () => {
     let app;
