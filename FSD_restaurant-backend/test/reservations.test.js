@@ -1,17 +1,9 @@
 const request = require('supertest');
 const express = require('express');
-
-jest.mock('../models/reservations', () => ({
-  find: jest.fn(),
-  create: jest.fn(),
-  findById: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-  findByIdAndDelete: jest.fn(),
-  deleteMany: jest.fn()
-}));
-
 const Reservations = require('../models/reservations');
 const createRouter = require('../routes/reservations');
+
+jest.mock('../models/reservations');
 
 describe('Reservation Routes', () => {
     let app;
