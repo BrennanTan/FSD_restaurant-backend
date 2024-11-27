@@ -131,6 +131,72 @@ describe('Order Routes', () => {
         });          
     });
 
+    describe('GET /getOrderHistory/:userId', () => {
+      it('should return a users order history', async () => {
+          const mockUserId = 'mock-user-id-123';
+          const mockOrderHistory = [
+            {
+            items: [
+                {
+                itemId: '64a1b23c45d67e8901f23456',
+                quantity: 2
+                },
+                {
+                itemId: '64a1b23c45d67e8901f23457',
+                quantity: 1
+                }
+            ],
+            status: 'Pending',
+            userId: '64a1b23c45d67e8901f23458'
+            }
+          ];
+          
+          Orders.find.mockResolvedValue(mockOrderHistory);
+          
+          const response = await request(app)
+              .get(`/orders/getOrderHistory/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual(expect.objectContaining(mockOrderHistory));
+      });
+          
+      it('should return 404 when no orders found for the user', async () => {
+          const mockUserId = 'mock-user-id-123';
+          
+          Orders.find.mockResolvedValue([]);
+          
+          const response = await request(app)
+              .get(`/orders/getOrderHistory/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBe('No orders for this user found');
+      });
+          
+      it('should handle database errors', async () => {
+          const mockUserId = 'mock-user-id-123';
+          
+          Orders.find.mockRejectedValue(new Error('Database error'));
+          
+          const response = await request(app)
+              .get(`/orders/getOrderHistory/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(500);
+          expect(response.body.message).toBe('Error retrieving orders for this user');
+      });          
+    });
+
     describe('POST /newOrder', () => {
         it('should create a new order with valid data', async () => {
             const mockOrders =

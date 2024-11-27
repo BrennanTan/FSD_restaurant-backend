@@ -50,6 +50,26 @@ router.get('/getActiveOrder/:userId', async (req, res) => {
   }
 });
 
+// Find users' orders
+router.get('/getOrderHistory/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const orderHistory = await Orders.find({userId});
+
+    if (orderHistory.length > 0) {
+      return res.status(200).json(orderHistory);
+    } else {
+      return res.status(404).json({ message: 'No orders for this user found' });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ 
+      message: 'Error retrieving orders for this user', 
+      error: error.message 
+    });
+  }
+});
+
 // Create new Order
 router.post('/newOrder', async (req, res) => {
   try {
