@@ -39,8 +39,7 @@ describe('Menu Routes', () => {
         name: 'Test Item',
         category: 'Test Category',
         description: 'Test Description',
-        price: 9.99,
-        image: 'test.jpg'
+        price: 9.99
       }];
 
       MenuItems.find.mockResolvedValue(mockMenuItems);
@@ -66,8 +65,7 @@ describe('Menu Routes', () => {
           name: 'New Item',
           category: 'New Category',
           description: 'New Description',
-          price: 12.99,
-          image: 'new.jpg'
+          price: 12.99
         };
 
         const response = await request(app)
@@ -102,8 +100,7 @@ describe('Menu Routes', () => {
         name: 'New Item',
         category: 'New Category',
         description: 'New Description',
-        price: 12.99,
-        image: 'new.jpg'
+        price: 12.99
       };
 
       MenuItems.create.mockRejectedValue(new Error('Database error'));
@@ -129,7 +126,6 @@ describe('Menu Routes', () => {
       category: 'Updated Category',
       description: 'Updated Description',
       price: 14.99,
-      image: 'updated.jpg',
       available: false
     };
 

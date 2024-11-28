@@ -25,8 +25,8 @@ router.get('/getMenu', async (req, res) => {
 router.post('/newMenuItem', async (req, res) => {
   try {
     // Validate required fields
-    const { name, category, description, price, image } = req.body;
-    if (!name || !category || !description || !price || !image) {
+    const { name, category, description, price } = req.body;
+    if (!name || !category || !description || !price) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -46,7 +46,7 @@ router.post('/newMenuItem', async (req, res) => {
 // Update Menu Item
 router.put('/updateMenuItem', async (req, res) => {
   try {
-    const { itemId, name, category, description, price, available, image } = req.body;
+    const { itemId, name, category, description, price, available } = req.body;
 
     if (!itemId) {
       return res.status(400).json({ message: 'Missing item ID' });
@@ -59,7 +59,7 @@ router.put('/updateMenuItem', async (req, res) => {
 
     const updatedMenuItem = await MenuItems.findByIdAndUpdate(
       itemId,
-      { name, category, description, price, available, image },
+      { name, category, description, price, available },
       { new: true }
     );
 
