@@ -59,6 +59,62 @@ describe('Menu Routes', () => {
     });
   });
 
+  describe('GET /getMenuItem/:itemId', () => {
+    it('should return menu item', async () => {
+        const mockMenuId = "mock-id-123";
+        const mockMenuItem = {
+          name: 'Test Item',
+          category: 'Test Category',
+          description: 'Test Description',
+          price: 9.99
+        };
+        
+        MenuItems.findOne.mockResolvedValue(mockMenuItem);
+        
+        const response = await request(app)
+            .get(`/menu/getMenuItem/${mockMenuId}`)
+            .catch((error) => {
+            console.error('Request error:', error);
+            throw error;
+            });
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(expect.objectContaining(mockMenuItem));
+    });
+        
+    it('should return 404 when no item found', async () => {
+        const mockMenuId = "mock-id-123";
+        
+        MenuItems.findOne.mockResolvedValue(null);
+        
+        const response = await request(app)
+            .get(`/menu/getMenuItem/${mockMenuId}`)
+            .catch((error) => {
+            console.error('Request error:', error);
+            throw error;
+            });
+        
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('No menu item found!');
+    });
+        
+    it('should handle database errors', async () => {
+        const mockMenuId = "mock-id-123";
+        
+        MenuItems.findOne.mockRejectedValue(new Error('Database error'));
+        
+        const response = await request(app)
+            .get(`/menu/getMenuItem/${mockMenuId}`)
+            .catch((error) => {
+            console.error('Request error:', error);
+            throw error;
+            });
+        
+        expect(response.status).toBe(500);
+        expect(response.body.message).toBe('Error retrieving menu item');
+    });          
+  });
+
   describe('POST /newMenuItem', () => {
     it('should create a new menu item with valid data', async () => {
         const menuData = {
