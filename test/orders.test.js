@@ -36,22 +36,22 @@ describe('Order Routes', () => {
       });
 
       it('should return all pending orders if they exist', async () => {
-          const mockOrders = [
+        const mockOrders = [
+          {
+          items: [
               {
-              items: [
-                  {
-                  itemId: '64a1b23c45d67e8901f23456',
-                  quantity: 2
-                  },
-                  {
-                  itemId: '64a1b23c45d67e8901f23457',
-                  quantity: 1
-                  }
-              ],
-              status: 'Pending',
-              userId: '64a1b23c45d67e8901f23458'
+              itemName: 'Pizza',
+              quantity: 2
+              },
+              {
+              itemName: 'Salad',
+              quantity: 1
               }
-          ];
+          ],
+          status: 'Pending',
+          userId: '64a1b23c45d67e8901f23458'
+          }
+        ];
 
       Orders.find.mockResolvedValue(mockOrders);
 
@@ -81,22 +81,22 @@ describe('Order Routes', () => {
         });
 
         it('should return all active orders if they exist', async () => {
-            const mockOrders = [
+          const mockOrders = [
+            {
+            items: [
                 {
-                items: [
-                    {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2
-                    },
-                    {
-                    itemId: '64a1b23c45d67e8901f23457',
-                    quantity: 1
-                    }
-                ],
-                status: 'Preparing',
-                userId: '64a1b23c45d67e8901f23458'
+                itemName: 'Burger',
+                quantity: 2
+                },
+                {
+                itemName: 'Fries',
+                quantity: 1
                 }
-            ];
+            ],
+            status: 'Preparing',
+            userId: '64a1b23c45d67e8901f23458'
+            }
+          ];
 
         Orders.find.mockResolvedValue(mockOrders);
 
@@ -119,15 +119,15 @@ describe('Order Routes', () => {
         it('should return active order for a user', async () => {
             const mockUserId = 'mock-user-id-123';
             const mockActiveOrder = {
-                _id: 'mock-order-id-123',
-                items: [
-                {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2,
-                },
-                ],
-                status: 'Preparing',
-                userId: mockUserId,
+              _id: 'mock-order-id-123',
+              items: [
+              {
+                  itemName: 'Sandwich',
+                  quantity: 2,
+              },
+              ],
+              status: 'Preparing',
+              userId: mockUserId,
             };
             
             Orders.findOne.mockResolvedValue(mockActiveOrder);
@@ -180,15 +180,15 @@ describe('Order Routes', () => {
       it('should return pending order for a user', async () => {
           const mockUserId = 'mock-user-id-123';
           const mockPendingOrder = {
-              _id: 'mock-order-id-123',
-              items: [
-              {
-                  itemId: '64a1b23c45d67e8901f23456',
-                  quantity: 2,
-              },
-              ],
-              status: 'Pending',
-              userId: mockUserId,
+            _id: 'mock-order-id-123',
+            items: [
+            {
+                itemName: 'Pasta',
+                quantity: 2,
+            },
+            ],
+            status: 'Pending',
+            userId: mockUserId,
           };
           
           Orders.findOne.mockResolvedValue(mockPendingOrder);
@@ -244,11 +244,11 @@ describe('Order Routes', () => {
             {
             items: [
                 {
-                itemId: '64a1b23c45d67e8901f23456',
+                itemName: 'Soup',
                 quantity: 2
                 },
                 {
-                itemId: '64a1b23c45d67e8901f23457',
+                itemName: 'Bread',
                 quantity: 1
                 }
             ],
@@ -305,21 +305,20 @@ describe('Order Routes', () => {
 
     describe('POST /newOrder', () => {
         it('should create a new order with valid data', async () => {
-            const mockOrders =
+          const mockOrders = {
+            items: [
                 {
-                items: [
-                    {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2
-                    },
-                    {
-                    itemId: '64a1b23c45d67e8901f23457',
-                    quantity: 1
-                    }
-                ],
-                status: 'Pending',
-                userId: '64a1b23c45d67e8901f23458'
-                };
+                itemName: 'Sushi',
+                quantity: 2
+                },
+                {
+                itemName: 'Miso Soup',
+                quantity: 1
+                }
+            ],
+            status: 'Pending',
+            userId: '64a1b23c45d67e8901f23458'
+          };
           
             const mockCreatedItem = { ...mockOrders, _id: 'mock-id-123' };
             Orders.create.mockResolvedValue(mockCreatedItem);
@@ -360,21 +359,21 @@ describe('Order Routes', () => {
         });
 
         it('should return 400 if no user ID', async () => {
-            const noUserID = [
+          const noUserID = [
+            {
+            items: [
                 {
-                items: [
-                    {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2
-                    },
-                    {
-                    itemId: '64a1b23c45d67e8901f23457',
-                    quantity: 1
-                    }
-                ],
-                status: 'Pending'
+                itemName: 'Curry',
+                quantity: 2
+                },
+                {
+                itemName: 'Naan',
+                quantity: 1
                 }
-            ];
+            ],
+            status: 'Pending'
+            }
+          ];
 
           const response = await request(app)
             .post('/orders/newOrder')
@@ -390,21 +389,20 @@ describe('Order Routes', () => {
         });
     
         it('should handle database errors', async () => {
-            const mockOrders =
+          const mockOrders = {
+            items: [
                 {
-                items: [
-                    {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2
-                    },
-                    {
-                    itemId: '64a1b23c45d67e8901f23457',
-                    quantity: 1
-                    }
-                ],
-                status: 'Pending',
-                userId: '64a1b23c45d67e8901f23458'
-                };
+                itemName: 'Sushi',
+                quantity: 2
+                },
+                {
+                itemName: 'Miso Soup',
+                quantity: 1
+                }
+            ],
+            status: 'Pending',
+            userId: '64a1b23c45d67e8901f23458'
+          };
     
           Orders.create.mockRejectedValue(new Error('Database error'));
     
@@ -462,20 +460,20 @@ describe('Order Routes', () => {
         it('should update order status', async () => {
             const mockId = 'mock-id-123'
             const mockOrder = {
-                _id: mockId,
-                items: [
-                  {
-                    itemId: '64a1b23c45d67e8901f23456',
-                    quantity: 2,
-                  },
-                  {
-                    itemId: '64a1b23c45d67e8901f23457',
-                    quantity: 1,
-                  },
-                ],
-                status: 'Pending',
-                userId: '64a1b23c45d67e8901f23458',
-              };
+              _id: mockId,
+              items: [
+                {
+                  itemName: 'Tacos',
+                  quantity: 2,
+                },
+                {
+                  itemName: 'Salsa',
+                  quantity: 1,
+                },
+              ],
+              status: 'Pending',
+              userId: '64a1b23c45d67e8901f23458',
+          };
 
             const updatedOrder = { ...mockOrder, status: 'Preparing' };
             Orders.findByIdAndUpdate.mockResolvedValue(updatedOrder);

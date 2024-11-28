@@ -21,6 +21,25 @@ router.get('/getMenu', async (req, res) => {
   }
 });
 
+// Get Menu item
+router.get('/getMenuItem/:itemId', async (req, res) => {
+  try {
+    const itemId = req.params.itemId;
+    const menuItem = await MenuItems.findOne(itemId);
+
+    if (!menuItem) {
+      return res.status(404).json({ message: 'No menu item found!' });
+    }
+
+    res.status(200).json(menuItem);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error retrieving menu item', 
+      error: error.message 
+    });
+  }
+});
+
 // Add New Menu Item
 router.post('/newMenuItem', async (req, res) => {
   try {
