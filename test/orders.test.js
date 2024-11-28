@@ -25,6 +25,51 @@ describe('Order Routes', () => {
       jest.clearAllMocks();
     });
 
+    describe('GET /getAllPendingOrders', () => {
+      it('should return 404 when no pending orders are found', async () => {
+      Orders.find.mockResolvedValue([]);
+
+      const response = await request(app).get('/orders/getAllPendingOrders');
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('No pending orders found');
+      expect(Orders.find).toHaveBeenCalled();
+      });
+
+      it('should return all pending orders if they exist', async () => {
+          const mockOrders = [
+              {
+              items: [
+                  {
+                  itemId: '64a1b23c45d67e8901f23456',
+                  quantity: 2
+                  },
+                  {
+                  itemId: '64a1b23c45d67e8901f23457',
+                  quantity: 1
+                  }
+              ],
+              status: 'Pending',
+              userId: '64a1b23c45d67e8901f23458'
+              }
+          ];
+
+      Orders.find.mockResolvedValue(mockOrders);
+
+      const response = await request(app).get('/orders/getAllPendingOrders');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockOrders);
+      expect(Orders.find).toHaveBeenCalled();
+      });
+
+      it('should handle errors', async () => {
+      Orders.find.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app).get('/orders/getAllPendingOrders');
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Error retrieving pending orders');
+      });
+    });
+
     describe('GET /getAllActiveOrders', () => {
         it('should return 404 when no active orders are found', async () => {
         Orders.find.mockResolvedValue([]);
@@ -48,7 +93,7 @@ describe('Order Routes', () => {
                     quantity: 1
                     }
                 ],
-                status: 'Pending',
+                status: 'Preparing',
                 userId: '64a1b23c45d67e8901f23458'
                 }
             ];
@@ -81,7 +126,7 @@ describe('Order Routes', () => {
                     quantity: 2,
                 },
                 ],
-                status: 'Pending',
+                status: 'Preparing',
                 userId: mockUserId,
             };
             
@@ -129,6 +174,67 @@ describe('Order Routes', () => {
             expect(response.status).toBe(500);
             expect(response.body.message).toBe('Error retrieving active orders for this user');
         });          
+    });
+
+    describe('GET /getPendingOrder/:userId', () => {
+      it('should return pending order for a user', async () => {
+          const mockUserId = 'mock-user-id-123';
+          const mockPendingOrder = {
+              _id: 'mock-order-id-123',
+              items: [
+              {
+                  itemId: '64a1b23c45d67e8901f23456',
+                  quantity: 2,
+              },
+              ],
+              status: 'Pending',
+              userId: mockUserId,
+          };
+          
+          Orders.findOne.mockResolvedValue(mockPendingOrder);
+          
+          const response = await request(app)
+              .get(`/orders/getPendingOrder/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual(expect.objectContaining(mockPendingOrder));
+      });
+          
+      it('should return 404 when no pending order found for the user', async () => {
+          const mockUserId = 'mock-user-id-123';
+          
+          Orders.findOne.mockResolvedValue(null);
+          
+          const response = await request(app)
+              .get(`/orders/getPendingOrder/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBe('No pending orders for this user found');
+      });
+          
+      it('should handle database errors', async () => {
+          const mockUserId = 'mock-user-id-123';
+          
+          Orders.findOne.mockRejectedValue(new Error('Database error'));
+          
+          const response = await request(app)
+              .get(`/orders/getPendingOrder/${mockUserId}`)
+              .catch((error) => {
+              console.error('Request error:', error);
+              throw error;
+              });
+          
+          expect(response.status).toBe(500);
+          expect(response.body.message).toBe('Error retrieving pending orders for this user');
+      });          
     });
 
     describe('GET /getOrderHistory/:userId', () => {
