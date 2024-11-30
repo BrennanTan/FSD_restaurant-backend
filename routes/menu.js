@@ -25,7 +25,7 @@ router.get('/getMenu', async (req, res) => {
 router.get('/getMenuItem/:itemId', async (req, res) => {
   try {
     const itemId = req.params.itemId;
-    const menuItem = await MenuItems.findOne(itemId);
+    const menuItem = await MenuItems.findOne({_id: itemId});
 
     if (!menuItem) {
       return res.status(404).json({ message: 'No menu item found!' });
