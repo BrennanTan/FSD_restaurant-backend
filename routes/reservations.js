@@ -7,7 +7,10 @@ module.exports = (wsServer) => {
 router.get('/getUserReservations/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
-    const userReservations = await Reservations.find({ userId });
+    const userReservations = await Reservations.find({ 
+      userId,
+      status: { $nin: ['Cancelled','Declined']} 
+    });
 
     if (Array.isArray(userReservations) && userReservations.length > 0) {
       return res.status(200).json(userReservations);
