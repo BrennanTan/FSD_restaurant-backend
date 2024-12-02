@@ -124,10 +124,9 @@ router.post('/newOrder', async (req, res) => {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
-    const order = await Orders.create(req.body);
+    await Orders.create(req.body);
 
     wsServer.notifyRoles('ADMIN', 'New Order Created', {
-      orderId: order._id,
       message: 'New Order Received'
     });
 

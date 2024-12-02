@@ -72,10 +72,9 @@ router.post('/newReservations', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const reservation = await Reservations.create(req.body);
+    await Reservations.create(req.body);
 
     wsServer.notifyRoles('ADMIN', 'New Reservation Created', {
-      reservationId: reservation._id,
       message: 'New Reservation Received'
     });
 
@@ -107,22 +106,18 @@ router.put('/updateReservationStatus', async (req, res) => {
     switch (status) {
       case 'Accepted':
         wsServer.notifyRoles('USER', 'Reservation Accepted', {
-          reservationId: updatedReservation._id,
           message: 'Reservation Accepted'
         });
         break;
 
       case 'Declined':
         wsServer.notifyRoles('USER', 'Reservation Declined', {
-          reservationId: updatedReservation._id,
           message: 'Reservation Declined'
         });
         break;
       
       case 'Cancelled':
         wsServer.notifyRoles('ADMIN', 'User Cancelled Reservation', {
-          reservationId: updatedReservation._id,
-          userId: updatedReservation.userId,
           message: 'User cancelled reservation'
         });
         break;  
@@ -162,7 +157,6 @@ router.put('/updateReservation', async (req, res) => {
     }
 
     wsServer.notifyRoles('USER', 'Reservations Details Updated', {
-      reservationId: updatedReservation._id,
       message: 'Reservations Details Updated by Staff'
     });
 
