@@ -153,9 +153,9 @@ router.put('/updateOrderStatus', async (req, res) => {
     if (!updatedOrder) {
       return res.status(404).json({ message: 'Order not found!' });
     }
-
+    
     // Notify about status update
-    wsServer.notifyUsers(updatedOrder.userId, 'Order Status Updated', {
+    wsServer.notifyUsers(updatedOrder.userId.toString(), 'Order Status Updated', {
       orderId: orderId,
       status: status,
       message: `Your order status has been updated to ${status}`
